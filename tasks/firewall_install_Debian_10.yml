@@ -1,0 +1,16 @@
+---
+- name: Ensure iptables are not installed
+  package:
+    name: iptables
+    state: absent
+
+- name: Ensure nftables are installed
+  package:
+    name: nftables
+    state: present
+
+# blocks IP addresses after multiple unsuccessful authentication attempts
+- name: Install fail2ban package
+  package:
+    name: fail2ban
+    state: present

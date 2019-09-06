@@ -1,0 +1,36 @@
+---
+# set up FW rules
+- name: Set up firewall rules
+  template:
+    backup: true
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+  register: inet_rules
+
+- name: Activate firewall rules now and on reboots
+  service:
+    name: nftables
+    state: reloaded
+    enabled: yes
+  when: inet_rules.changed
+
+- name: Set up fail2ban action
+  template:
+    src: nftables-common.local.j2
+    dest: /etc/fail2ban/action.d/nftables-common.local
+  register: f2b_action
+
+- name: Set up fail2ban jail
+  template:
+    force: no
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+  register: f2b_jail
+
+- name: Activate fail2ban settings
+  service:
+    name: fail2ban
+    state: restarted
+    enabled: yes
+  when: f2b_action.changed or f2b_jail.changed
+

@@ -1,0 +1,37 @@
+#!/usr/sbin/nft -f
+flush ruleset
+table inet filter {
+        chain output {
+                type filter hook output priority 0; policy accept;
+                counter comment "count accepted packets"
+        }
+
+        chain forward {
+                type filter hook forward priority 0; policy drop;
+                counter comment "count dropped packets"
+        }
+
+        chain input {
+                type filter hook input priority 0; policy drop;
+                ct state invalid drop comment "drop invalid packets"
+                ct state { established, related } accept comment "accept all connections related to connections made by us"
+                iifname "lo" accept comment "accept loopback"
+                iifname != "lo" ip saddr 127.0.0.0/8 drop comment "block remote packets claiming to be from IPv4 loopback address"
+                iifname != "lo" ip6 saddr ::1 drop comment "block remote packets claiming to be from IPv6 loopback address"
+                ip protocol icmp accept comment "accept all icmp types"
+                ip6 nexthdr ipv6-icmp accept comment "accept all icmp types"
+{% for item in firewall_open_ssh_ports %}
+                {% if item.ipv4 is defined %}ip saddr {{ item.ipv4 }} {% elif item.ipv6 is defined %}ipv6 saddr {{ item.ipv6 }} {% endif %}tcp dport {{ item.port }} accept comment "{{ item.comment }}"
+{% endfor %}
+{% for item in firewall_open_tcp_ports %}
+                {% if item.ipv4 is defined %}ip saddr {{ item.ipv4 }} {% elif item.ipv6 is defined %}ipv6 saddr {{ item.ipv6 }} {% endif %}tcp dport {{ item.port }} accept comment "{{ item.comment }}"
+{% endfor %}
+                counter comment "count dropped packets"
+        }
+}
+table inet fail2ban {
+        chain input {
+                # Assign a high priority to reject as fast as possible and avoid more complex rule evaluation
+                type filter hook input priority 100;
+        }
+}
