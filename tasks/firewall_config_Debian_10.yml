@@ -33,4 +33,3 @@
     state: restarted
     enabled: yes
   when: f2b_action.changed or f2b_jail.changed
-

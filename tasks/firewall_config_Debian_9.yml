@@ -32,4 +32,3 @@
     name: fail2ban
     state: started
   when: ipv4_rules.changed or ipv6_rules.changed
-
