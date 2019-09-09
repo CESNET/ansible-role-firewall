@@ -1,12 +1,12 @@
 ---
-- name: Set up IPv4 firewall rules
+- name: Set up IPv4 iptables rules
   template:
     backup: true
     src: rules.v4.j2
     dest: /etc/iptables/rules.v4
   register: ipv4_rules
 
-- name: Set up IPv6 firewall rules
+- name: Set up IPv6 iptables rules
   template:
     backup: true
     src: rules.v6.j2
@@ -19,11 +19,11 @@
     state: stopped
   when: ipv4_rules.changed or ipv6_rules.changed
 
-- name: Activate IPv4 firewall rules
+- name: Activate IPv4 iptables rules
   command: /sbin/iptables-restore /etc/iptables/rules.v4
   when: ipv4_rules.changed
 
-- name: Activate IPv6 firewall rules
+- name: Activate IPv6 iptables rules
   command: /sbin/ip6tables-restore /etc/iptables/rules.v6
   when: ipv6_rules.changed
 

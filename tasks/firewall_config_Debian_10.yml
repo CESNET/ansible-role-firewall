@@ -1,35 +1,31 @@
 ---
 # set up FW rules
-- name: Set up firewall rules
+- name: Set nftables rules
   template:
     backup: true
     src: nftables.conf.j2
     dest: /etc/nftables.conf
-  register: inet_rules
+  notify: "reload nftables"
 
-- name: Activate firewall rules now and on reboots
+- name: Activate nftables on reboots
   service:
     name: nftables
-    state: reloaded
     enabled: yes
-  when: inet_rules.changed
 
-- name: Set up fail2ban action
+- name: Set up fail2ban action for nftables
   template:
     src: nftables-common.local.j2
     dest: /etc/fail2ban/action.d/nftables-common.local
-  register: f2b_action
+  notify: "restart fail2ban"
 
-- name: Set up fail2ban jail
+- name: Set up fail2ban jail for nftables
   template:
     force: no
     src: jail.local.j2
     dest: /etc/fail2ban/jail.local
-  register: f2b_jail
+  notify: "restart fail2ban"
 
-- name: Activate fail2ban settings
+- name: Activate fail2ban on reboots
   service:
     name: fail2ban
-    state: restarted
     enabled: yes
-  when: f2b_action.changed or f2b_jail.changed
