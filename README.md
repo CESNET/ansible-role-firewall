@@ -8,7 +8,7 @@ Use "--tags config" to run only config.
 
 Role Variables
 --------------
-- firewall_open_ssh_ports - predefined rules for accepting ssh only from trusted networks of MU,CESNET,ZCU,JCU,CAS 
+- firewall_open_ssh_ports - predefined rules for accepting ssh only from networks of MUNI,CESNET,ZCU 
 - firewall_open_tcp_ports - empty set, define as in the example below 
 
 Example Playbook
@@ -19,9 +19,13 @@ Example Playbook
     - role: cesnet.firewall
       vars:
        firewall_open_ssh_ports:
+          - { port: "ssh", ipv4: "147.251.0.0/16", comment: "accept ssh from MUNI" }
+          - { port: "ssh", ipv4: "147.228.0.0/16", comment: "accept ssh from ZCU" }
+          - { port: "ssh", ipv4: "147.231.0.0/16", comment: "accept ssh from CAS" }
+          - { port: "ssh", ipv4: "160.217.0.0/16", comment: "accept ssh from JCU" }
           - { port: "ssh", ipv4: "78.128.208.0/20", comment: "accept ssh from CESNET" }
           - { port: "ssh", ipv4: "195.113.0.0/16", comment: "accept ssh from CESNET" }
-          - { port: "ssh", ipv6: "2001:718::/32", comment: "accept ssh from CESNET" }
+          - { port: "ssh", ipv6: "2001:718::/32", comment: "accept ssh from CESNET provider" } 
         firewall_open_tcp_ports:
           - { port: 25, ipv4: "147.251.0.0/16", comment: "accept SMTP from MUNI" }
           - { port: 80, comment: "accept http" }
