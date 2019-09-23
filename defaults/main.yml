@@ -7,9 +7,4 @@ firewall_open_ssh_ports:
   - { port: "ssh", ipv4: "195.113.0.0/16", comment: "accept ssh from CESNET" }
   - { port: "ssh", ipv6: "2001:718::/32", comment: "accept ssh from CESNET provider" }
 
-firewall_open_tcp_ports:
-  - { port: 80, comment: "accept http" }
-  - { port: 443, comment: "accept https" }
-  - { port: 636, comment: "accept ldaps" }
-  - { port: 5432, ipv4: "147.251.0.0/16", comment: "accept postgres from MUNI" }
-  - { port: 5432, ipv6: "2001:718::/32", comment: "accept postgres from CESNET" }
+firewall_open_tcp_ports: []

@@ -1,7 +1,7 @@
 cesnet.firewall
 ======================
 
-Ansible Galaxy role [cesnet.firewall](https://galaxy.ansible.com/cesnet/unattended_upgrades) 
+Ansible Galaxy role [cesnet.firewall](https://galaxy.ansible.com/cesnet/firewall) 
 that installs firewall (iptables or nftables) and fail2ban.
 
 Use "--tags config" to run only config.
@@ -18,7 +18,7 @@ Example Playbook
   roles:
     - role: cesnet.firewall
       vars:
-       firewall_open_ssh_ports:
+        firewall_open_ssh_ports:
           - { port: "ssh", ipv4: "147.251.0.0/16", comment: "accept ssh from MUNI" }
           - { port: "ssh", ipv4: "147.228.0.0/16", comment: "accept ssh from ZCU" }
           - { port: "ssh", ipv4: "147.231.0.0/16", comment: "accept ssh from CAS" }
