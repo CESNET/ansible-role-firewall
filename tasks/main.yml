@@ -1,25 +1,16 @@
 ---
 
-- import_tasks: firewall_install_Debian_9.yml
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "9"
+- name: "install firewall"
+  include_tasks: "firewall_install_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
   tags:
     - firewall
 
-- import_tasks: firewall_config_Debian_9.yml
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "9"
+- name: "configure firewall"
+  include_tasks: "firewall_config_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
   tags:
     - firewall
     - firewall_config
     - config
 
-- import_tasks: firewall_install_Debian_10.yml
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "10"
-  tags:
-    - firewall
-
-- import_tasks: firewall_config_Debian_10.yml
-  when: ansible_distribution == "Debian" and ansible_distribution_major_version == "10"
-  tags:
-    - firewall
-    - firewall_config
-    - config
+- name: "flush handlers"
+  meta: flush_handlers
