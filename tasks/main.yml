@@ -1,12 +1,28 @@
 ---
+- name:  "Ansible 2.7+ required"
+  assert:
+    that:
+      - ansible_version is defined
+      - ansible_version.full is version_compare('2.7', '>=')
+    msg: "Required Ansible version is 2.7+ with include_tasks supporting tags"
 
 - name: "install firewall"
-  include_tasks: "firewall_install_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  include_tasks:
+    file: "firewall_install_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    apply:
+      tags:
+        - firewall
   tags:
     - firewall
 
 - name: "configure firewall"
-  include_tasks: "firewall_config_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  include_tasks:
+    file: "firewall_config_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    apply:
+      tags:
+        - firewall
+        - firewall_config
+        - config
   tags:
     - firewall
     - firewall_config
