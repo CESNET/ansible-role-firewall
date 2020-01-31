@@ -1,0 +1,33 @@
+---
+# tool for setting firewall rules
+- name: "ensure nftables are not installed"
+  package:
+    name: nftables
+    state: absent
+
+- name: "install iptables package"
+  package:
+    name: iptables
+    state: present
+
+- name: "select legacy iptables"
+  alternatives:
+    name: iptables
+    path: /usr/sbin/iptables-legacy
+
+- name: "select legacy ip6tables"
+  alternatives:
+    name: ip6tables
+    path: /usr/sbin/ip6tables-legacy
+
+# tool for saving firewall rules to /etc/iptables/rules.v4 and /etc/iptables/rules.v6 to survive reboot
+- name: "install iptables-persistent package"
+  package:
+    name: iptables-persistent
+    state: present
+
+# blocks IP addresses after multiple unsuccessful authentication attempts
+- name: "install fail2ban package"
+  package:
+    name: fail2ban
+    state: present

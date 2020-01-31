@@ -8,7 +8,7 @@
 
 - name: "install firewall"
   include_tasks:
-    file: "firewall_install_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    file: "firewall_install_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ firewall_rules_type }}.yml"
     apply:
       tags:
         - firewall
@@ -17,7 +17,7 @@
 
 - name: "configure firewall"
   include_tasks:
-    file: "firewall_config_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    file: "firewall_config_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}_{{ firewall_rules_type }}.yml"
     apply:
       tags:
         - firewall
