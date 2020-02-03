@@ -8,5 +8,6 @@ firewall_open_ssh_ports:
   - { port: "ssh", ipv6: "2001:718::/32", comment: "accept ssh from CESNET provider" }
 
 firewall_open_tcp_ports: []
+firewall_open_udp_ports: []
 
 firewall_rules_type: iptables

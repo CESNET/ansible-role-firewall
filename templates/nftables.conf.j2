@@ -26,6 +26,9 @@ table inet filter {
 {% for item in firewall_open_tcp_ports %}
                 {% if item.ipv4 is defined %}ip saddr {{ item.ipv4 }} {% elif item.ipv6 is defined %}ip6 saddr {{ item.ipv6 }} {% endif %}tcp dport {{ item.port }} accept comment "{{ item.comment }}"
 {% endfor %}
+{% for item in firewall_open_udp_ports %}
+                {% if item.ipv4 is defined %}ip saddr {{ item.ipv4 }} {% elif item.ipv6 is defined %}ip6 saddr {{ item.ipv6 }} {% endif %}udp dport {{ item.port }} accept comment "{{ item.comment }}"
+{% endfor %}
                 counter comment "count dropped packets"
         }
 }

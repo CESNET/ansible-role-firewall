@@ -16,5 +16,9 @@
 {% if item.ipv4 is not defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
+{% for item in firewall_open_udp_ports %}
+{% if item.ipv4 is not defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p udp -m udp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% endif %}
+{% endfor %}
 -A INPUT -j REJECT
 COMMIT
