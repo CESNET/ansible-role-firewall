@@ -4,6 +4,15 @@
   package:
     name: nftables
     state: absent
+- name: "ensure fail2ban is not configured for nftables"
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /etc/fail2ban/action.d/nftables-common.local
+    - /etc/fail2ban/jail.local
+    - /etc/nftables.conf
+  notify: "restart fail2ban"
 
 - name: "install iptables package"
   package:
