@@ -10,7 +10,7 @@ Role Variables
 --------------
 - firewall_open_ssh_ports - predefined rules for accepting ssh only from networks of MUNI,CESNET,ZCU 
 - firewall_open_tcp_ports - empty set, define as in the example below 
-
+- firewall_known_ranges - known ranges for the Czech academic network
 Example Playbook
 ----------------
 ```yaml
@@ -33,4 +33,18 @@ Example Playbook
           - { port: 636, comment: "accept ldaps" }
           - { port: 5432, ipv6: "2001:718::/32", comment: "accept postgres from CESNET" }
           - { port: 5432, ipv6: "147.251.0.0/16", comment: "accept postgres from MUNI" }
+```
+For more complex setups, you can use filters, e.g. to open ports 80 and 443 to known IP ranges only:
+```yaml
+- hosts: all
+  vars:
+    my_ranges:
+      - { ipv4: "147.251.0.0/16", comment: "allow from MUNI" }
+      - { ipv6: "2001:718:801::/48", comment: "allow from MUNI" }
+      - { ipv4: "147.32.0.0/16", comment: "allow from CVUT" }
+      - { ipv4: "147.228.0.0/16", comment: "allow from ZCU" }
+    firewall_open_tcp_ports: "{{ (my_ranges|map('combine',{'port':'http'})|list) + (my_ranges|map('combine',{'port':'https'})|list) }}"
+  roles:
+    - role: cesnet.firewall
+
 ```
