@@ -3,8 +3,9 @@
 firewall_open_ssh_ports:
   - { port: "ssh", ipv4: "147.251.0.0/16", comment: "accept ssh from MUNI" }
   - { port: "ssh", ipv4: "147.228.0.0/16", comment: "accept ssh from ZCU" }
-  - { port: "ssh", ipv4: "78.128.208.0/20", comment: "accept ssh from CESNET" }
+  - { port: "ssh", ipv4: "78.128.128.0/17", comment: "accept ssh from CESNET" }
   - { port: "ssh", ipv4: "195.113.0.0/16", comment: "accept ssh from CESNET" }
+  - { port: "ssh", ipv4: "195.178.64.0/19", comment: "accept ssh from CESNET" }
   - { port: "ssh", ipv6: "2001:718::/32", comment: "accept ssh from CESNET provider" }
 
 firewall_open_tcp_ports: []
@@ -12,6 +13,7 @@ firewall_open_udp_ports: []
 
 firewall_rules_type: iptables
 
+# CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
 # use like this:
 #  "{{ ( firewall_known_ranges | map('combine',{ 'port': '5432' }) | list) + ( firewall_known_ranges | map('combine',{ 'port': '3306' }) | list) }}"
 firewall_known_ranges:
@@ -22,10 +24,8 @@ firewall_known_ranges:
   - { ipv4: "147.230.0.0/16", comment: "TUL" }
   - { ipv4: "147.231.0.0/16", comment: "CAS" }
   - { ipv4: "160.217.0.0/16", comment: "JCU" }
-  - { ipv4: "78.128.210.0/25", comment: "CESNET_210" }
-  - { ipv4: "78.128.211.0/24", comment: "CESNET_211" }
-  - { ipv4: "78.128.216.0/24", comment: "CESNET_216" }
-  - { ipv4: "78.128.240.0/22", comment: "CESNET_240" }
-  - { ipv4: "195.113.0.0/16", comment: "CESNET_195" }
+  - { ipv4: "78.128.128.0/17", comment: "CESNET" }
+  - { ipv4: "195.113.0.0/16", comment: "CESNET_195_113" }
+  - { ipv4: "195.178.64.0/19", comment: "CESNET_195_178" }
   - { ipv6: "2001:718:ff01::/48", comment: "MetaCentrum" }
   - { ipv6: "2001:718::/32", comment: "whole CESNET provider" }
