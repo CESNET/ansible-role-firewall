@@ -2,7 +2,7 @@ cesnet.firewall
 ======================
 
 Ansible Galaxy role [cesnet.firewall](https://galaxy.ansible.com/cesnet/firewall) 
-that installs firewall (iptables or nftables) and fail2ban.
+that installs firewall (iptables or nftables). The iptables version is compatible with Docker.
 
 Use "--tags config" to run only config.
 

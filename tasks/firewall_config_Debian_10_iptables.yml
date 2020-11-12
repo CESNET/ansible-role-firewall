@@ -13,22 +13,8 @@
     dest: /etc/iptables/rules.v6
   register: ipv6_rules
 
-- name: "stop fail2ban"
-  service:
-    name: fail2ban
-    state: stopped
-  when: ipv4_rules.changed or ipv6_rules.changed
-
-- name: "activate IPv4 iptables rules"
-  command: /sbin/iptables-restore /etc/iptables/rules.v4
-  when: ipv4_rules.changed
-
-- name: "activate IPv6 iptables rules"
-  command: /sbin/ip6tables-restore /etc/iptables/rules.v6
-  when: ipv6_rules.changed
-
-- name: "start fail2ban"
-  service:
-    name: fail2ban
-    state: started
+- name: "activate iptables rules"
+  systemd:
+    name: iptables
+    state: restarted
   when: ipv4_rules.changed or ipv6_rules.changed

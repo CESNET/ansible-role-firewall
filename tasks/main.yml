@@ -1,10 +1,10 @@
 ---
-- name:  "Ansible 2.7+ required"
+- name:  "Ansible 2.9+ required"
   assert:
     that:
       - ansible_version is defined
-      - ansible_version.full is version_compare('2.7', '>=')
-    msg: "Required Ansible version is 2.7+ with include_tasks supporting tags"
+      - ansible_version.full is version_compare('2.9', '>=')
+    msg: "Required Ansible version is 2.9+ with include_tasks supporting tags"
 
 - name: "install firewall"
   include_tasks:
