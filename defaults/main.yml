@@ -13,6 +13,11 @@ firewall_open_udp_ports: []
 
 firewall_rules_type: iptables
 
+# special rules for dropping packets before Docker gets them in the FORWARD chain
+# e.g. { port: 9000, only: "147.251.0.0/16", comment: "accept portainer from MUNI" }
+# only a single network can be dropped this way!
+firewall_docker_rules: []
+
 # CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
 # use like this:
 #  "{{ ( firewall_known_ranges | map('combine',{ 'port': '5432' }) | list) + ( firewall_known_ranges | map('combine',{ 'port': '3306' }) | list) }}"

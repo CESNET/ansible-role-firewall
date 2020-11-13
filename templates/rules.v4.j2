@@ -3,34 +3,37 @@
 :INPUT ACCEPT [0:0]
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
-:FILTERS - [0:0]
+{% if firewall_docker_rules %}
 :DOCKER-USER - [0:0]
-# flush chains INPUT, DOCKER_USER and FILTERS
+{% endif %}
+# flush chains
 -F INPUT
+{% if firewall_docker_rules %}
 -F DOCKER-USER
--F FILTERS
+# docker rules
+{% for item in firewall_docker_rules %}
+-A DOCKER-USER -i eth0 ! -s {{ item.only }} -p tcp -m tcp --dport {{ item.port }} -j REJECT -m comment --comment "{{ item.comment }}"
+{% endfor %}
+{% endif %}
 # basic rules
 -A INPUT -p icmp -m comment --comment "accept all icmp" -j ACCEPT
 -A INPUT -i lo -j ACCEPT -m comment --comment "accept all on loopback"
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment "accept existing connections"
 -A INPUT -m conntrack --ctstate INVALID -j DROP -m comment --comment "drop invalid packets"
 -A INPUT -s 127.0.0.0/8 ! -i lo -j DROP -m comment --comment "block remote packets claiming to be from a loopback address"
-# chain to FILTERS
--A INPUT -j FILTERS
--A DOCKER-USER -i eth0 -j FILTERS
-# main firewall rules
+# main rules
 {% for item in firewall_open_ssh_ports %}
-{% if item.ipv6 is not defined %}-A FILTERS {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv6 is not defined %}-A INPUT {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
 {% for item in firewall_open_tcp_ports %}
-{% if item.ipv6 is not defined %}-A FILTERS {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv6 is not defined %}-A INPUT {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
 {% for item in firewall_open_udp_ports %}
-{% if item.ipv6 is not defined %}-A FILTERS {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p udp -m udp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv6 is not defined %}-A INPUT {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p udp -m udp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
 # final reject
--A FILTERS -j REJECT
+-A INPUT -j REJECT
 COMMIT
