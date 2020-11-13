@@ -12,7 +12,7 @@
 -F DOCKER-USER
 # docker rules
 {% for item in firewall_docker_rules %}
--A DOCKER-USER -i eth0 ! -s {{ item.only }} -p tcp -m tcp --dport {{ item.port }} -j REJECT -m comment --comment "{{ item.comment }}"
+-A DOCKER-USER -i {{ ansible_default_ipv4.interface }} ! -s {{ item.only }} -p tcp -m tcp --dport {{ item.port }} -j REJECT -m comment --comment "{{ item.comment }}"
 {% endfor %}
 {% endif %}
 # basic rules
