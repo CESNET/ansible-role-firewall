@@ -1,0 +1,56 @@
+---
+- name: "ensure nftables,fail2ban and iptables-persistent are not installed"
+  package:
+    name:
+      - nftables
+      - fail2ban
+      - iptables-persistent
+    state: absent
+
+- name: "install iptables package"
+  package:
+    name: iptables
+    state: present
+
+- name: "select legacy iptables"
+  alternatives:
+    name: iptables
+    path: /usr/sbin/iptables-legacy
+
+- name: "select legacy ip6tables"
+  alternatives:
+    name: ip6tables
+    path: /usr/sbin/ip6tables-legacy
+
+# see https://unrouted.io/2017/08/15/docker-firewall/
+- name: "create iptables systemd service config"
+  copy:
+    dest: /etc/systemd/system/iptables.service
+    content: |
+      [Unit]
+      Description=Restore iptables firewall rules
+      Before=network-pre.target
+
+      [Service]
+      Type=oneshot
+      ExecStart=/sbin/iptables-restore --noflush /etc/iptables/rules.v4
+      ExecStart=/sbin/ip6tables-restore /etc/iptables/rules.v6
+
+      [Install]
+      WantedBy=multi-user.target
+  register: ipsvccfg
+
+- name: "reload systemd"
+  systemd:
+    daemon_reload: yes
+  when: ipsvccfg.changed
+
+- name: "run iptables service on reboots"
+  systemd:
+    name: iptables
+    enabled: yes
+
+- name: "create directory /etc/iptables"
+  file:
+    path: /etc/iptables
+    state: directory
