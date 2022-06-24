@@ -22,8 +22,8 @@ firewall_docker_rules: []
 # use like this:
 #  "{{ ( firewall_known_ranges | map('combine',{ 'port': '5432' }) | list) + ( firewall_known_ranges | map('combine',{ 'port': '3306' }) | list) }}"
 firewall_known_ranges:
-  - { ipv4: "147.251.0.0/16", comment: "MUNI" }
-  - { ipv6: "2001:718:801::/48", comment: "MUNI" }
+  - { ipv4: "147.251.0.0/16", comment: "MUNI IPv4" }
+  - { ipv6: "2001:718:801::/48", comment: "MUNI IPv6" }
   - { ipv4: "147.32.0.0/16", comment: "CVUT" }
   - { ipv4: "147.228.0.0/16", comment: "ZCU" }
   - { ipv4: "147.230.0.0/16", comment: "TUL" }
@@ -32,5 +32,8 @@ firewall_known_ranges:
   - { ipv4: "78.128.128.0/17", comment: "CESNET" }
   - { ipv4: "195.113.0.0/16", comment: "CESNET_195_113" }
   - { ipv4: "195.178.64.0/19", comment: "CESNET_195_178" }
-  - { ipv6: "2001:718:ff01::/48", comment: "MetaCentrum" }
+  - { ipv4: "78.128.216.177/32", comment: "MetaCentrum IPv4" }
+  - { ipv6: "2001:718:ff01::/48", comment: "MetaCentrum IPv6" }
   - { ipv6: "2001:718::/32", comment: "whole CESNET provider" }
+  - { ipv4: "195.113.222.0/24", comment: "CESNET VPN IPv4" }
+  - { ipv6: "2001:718:1:13::/64", comment: "CESNET VPN IPv6",  }
