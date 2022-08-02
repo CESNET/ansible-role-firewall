@@ -11,9 +11,13 @@
 {% if firewall_docker_rules %}
 -F DOCKER-USER
 # docker rules
-{% for item in firewall_docker_rules %}
--A DOCKER-USER -i {{ ansible_default_ipv4.interface }} ! -s {{ item.only }} -p tcp -m tcp --dport {{ item.port }} -j REJECT -m comment --comment "{{ item.comment }}"
+{% for docker_rule in firewall_docker_rules %}
+{% for only in docker_rule.only %}
+-A DOCKER-USER -i {{ ansible_default_ipv4.interface }} -s {{ only.ipv4 }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j ACCEPT -m comment --comment "{{ only.comment }}"
 {% endfor %}
+-A DOCKER-USER -i {{ ansible_default_ipv4.interface }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j REJECT
+{% endfor %}
+-A DOCKER-USER -j RETURN
 {% endif %}
 # basic rules
 -A INPUT -p icmp -m comment --comment "accept all icmp" -j ACCEPT
