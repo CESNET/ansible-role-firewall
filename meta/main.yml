@@ -5,13 +5,15 @@ galaxy_info:
   role_name: firewall
   author: Martin Kuba
   company: CESNET
-  description: Installs firewall (iptables or nftables)
+  description: Installs firewall (iptables)
   license: "Apache 2.0"
   min_ansible_version: 2.9
   platforms:
     - name: Debian
       versions:
         - buster
+        - bullseye
+        - bookworm
   galaxy_tags:
     - firewall
     - system

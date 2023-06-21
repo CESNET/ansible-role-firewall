@@ -11,8 +11,6 @@ firewall_open_ssh_ports:
 firewall_open_tcp_ports: []
 firewall_open_udp_ports: []
 
-firewall_rules_type: iptables
-
 # special rules for dropping packets before Docker gets them in the FORWARD chain
 # e.g.
 #     firewall_docker_rules:
