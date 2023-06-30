@@ -8,9 +8,3 @@
   package:
     name: nftables
     state: present
-
-# blocks IP addresses after multiple unsuccessful authentication attempts
-- name: Install fail2ban package
-  package:
-    name: fail2ban
-    state: present

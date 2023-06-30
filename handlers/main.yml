@@ -1,13 +1,7 @@
 ---
 
-- name: Reload nftables
-  service:
-    name: nftables
-    state: reloaded
-  listen: "reload nftables"
-
-- name: Restart fail2ban
-  service:
-    name: fail2ban
-    state: restarted
-  listen: "restart fail2ban"
+#- name: Reload nftables
+#  service:
+#    name: nftables
+#    state: reloaded
+#  listen: "reload nftables"

@@ -1,14 +1,16 @@
 ---
-- name:  "Ansible 2.9+ required"
+- name: "Debian version check ({{ ansible_distribution_major_version }})"
   assert:
     that:
-      - ansible_version is defined
-      - ansible_version.full is version_compare('2.9', '>=')
-    msg: "Required Ansible version is 2.9+ with include_tasks supporting tags"
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version is version('10','>=')
+    msg: "Required version is 10+, this is {{ ansible_distribution }} {{ ansible_distribution_major_version }}"
+    quiet: true
 
 - name: "install firewall"
+  when: firewall_do_install
   include_tasks:
-    file: "firewall_install_{{ ansible_distribution }}_iptables.yml"
+    file: "firewall_install_iptables.yml"
     apply:
       tags:
         - firewall
@@ -16,17 +18,11 @@
     - firewall
 
 - name: "configure firewall"
+  when: firewall_do_config
   include_tasks:
-    file: "firewall_config_{{ ansible_distribution }}_iptables.yml"
+    file: "firewall_config_iptables.yml"
     apply:
       tags:
         - firewall
-        - firewall_config
-        - config
   tags:
     - firewall
-    - firewall_config
-    - config
-
-- name: "flush handlers"
-  meta: flush_handlers

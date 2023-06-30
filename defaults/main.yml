@@ -1,4 +1,7 @@
 ---
+firewall_do_install: yes
+firewall_do_config: yes
+
 # firewall defaults
 firewall_open_ssh_ports:
   - { port: "ssh", ipv4: "147.251.0.0/16", comment: "accept ssh from MUNI" }
@@ -40,5 +43,7 @@ firewall_known_ranges:
   - { ipv4: "78.128.216.177/32", comment: "MetaCentrum IPv4" }
   - { ipv6: "2001:718:ff01::/48", comment: "MetaCentrum IPv6" }
   - { ipv6: "2001:718::/32", comment: "whole CESNET provider" }
-  - { ipv4: "195.113.222.0/24", comment: "CESNET VPN IPv4" }
-  - { ipv6: "2001:718:1:13::/64", comment: "CESNET VPN IPv6",  }
+  - { ipv4: "78.128.246.160/32", comment: "CESNET eduVPN (1)" }
+  - { ipv4: "78.128.247.175/32", comment: "CESNET eduVPN (2)" }
+  - { ipv6: "2001:718:ff05:acb::/64", comment: "CESNET eduVPN (1) IPv6" }
+  - { ipv6: "2001:718:ff05:acc::/64", comment: "CESNET eduVPN (2) IPv6" }

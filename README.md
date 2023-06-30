@@ -2,9 +2,7 @@ cesnet.firewall
 ======================
 
 Ansible Galaxy role [cesnet.firewall](https://galaxy.ansible.com/cesnet/firewall) 
-that installs firewall (iptables or nftables). The iptables version allows rules for Docker.
-
-Use "--tags config" to run only config.
+that installs iptables firewall on Debian prepared for rules for Docker.
 
 The role creates a systemd service named "iptables" for applying rules and enables it for reboots.
 Apply rules from /etc/iptables with:
@@ -14,6 +12,8 @@ systemctl restart iptables
 
 Role Variables
 --------------
+- firewall_do_install - installs iptables-legacy and selects them as the default iptables alternative
+- firewall_do_config - creates files with rules and applies them
 - firewall_open_ssh_ports - predefined rules for accepting ssh only from networks of MUNI,CESNET,ZCU 
 - firewall_open_tcp_ports - empty set, define as in the example below 
 - firewall_known_ranges - known ranges for the Czech academic network
@@ -46,7 +46,8 @@ Example Playbook
           - port: 9000
             only:
               - { ipv4: "147.251.0.0/16", comment: "portainer from MUNI"}
-              - { ipv4: "195.113.222.0/24", comment: "portainer from CESNET VPN"}
+              - { ipv4: "78.128.246.160/32", comment: "portainer from CESNET eduVPN" }
+              - { ipv4: "78.128.247.175/32", comment: "portainer from CESNET eduVPN" }
           - port: 443
             only:
               - { ipv4: "147.251.0.0/16", comment: "https only from MUNI" }
@@ -90,5 +91,6 @@ do it like this:
           - port: 9000
             only:
               - { ipv4: "147.251.0.0/16", comment: "portainer from MUNI"}
-              - { ipv4: "195.113.222.0/24", comment: "portainer from CESNET VPN"}
+              - { ipv4: "78.128.246.160/32", comment: "portainer from CESNET eduVPN" }
+              - { ipv4: "78.128.247.175/32", comment: "portainer from CESNET eduVPN" }
 ```
