@@ -5,6 +5,7 @@ firewall_do_config: yes
 # firewall defaults
 firewall_open_ssh_ports:
   - { port: "ssh", ipv4: "147.251.0.0/16", comment: "accept ssh from MUNI" }
+  - { port: "ssh", ipv4: "100.67.76.0/22", comment: "accept ssh from MUNI eduVPN ICS" }
   - { port: "ssh", ipv4: "147.228.0.0/16", comment: "accept ssh from ZCU" }
   - { port: "ssh", ipv4: "78.128.128.0/17", comment: "accept ssh from CESNET" }
   - { port: "ssh", ipv4: "195.113.0.0/16", comment: "accept ssh from CESNET" }
@@ -27,11 +28,15 @@ firewall_open_udp_ports: []
 firewall_docker_rules: []
 
 # CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
+# MUNI eduVPN ranges https://kb.net.muni.cz/s/segmentace-site/doc/segmentace-vpn-rozsahu-645WQT3oz7
 # use like this:
 #  "{{ ( firewall_known_ranges | map('combine',{ 'port': '5432' }) | list) + ( firewall_known_ranges | map('combine',{ 'port': '3306' }) | list) }}"
 firewall_known_ranges:
   - { ipv4: "147.251.0.0/16", comment: "MUNI IPv4" }
+  - { ipv4: "100.66.0.0/15", comment: "MUNI IPv4 shared address space for employees" }
   - { ipv6: "2001:718:801::/48", comment: "MUNI IPv6" }
+  - { ipv4: "100.67.76.0/22", comment: "MUNI eduVPN ICS IPv4" }
+  - { ipv6: "2001:718:801:900:24c::/78", comment: "MUNI eduVPN ICS IPv6" }
   - { ipv4: "147.32.0.0/16", comment: "CVUT" }
   - { ipv4: "147.228.0.0/16", comment: "ZCU" }
   - { ipv4: "147.230.0.0/16", comment: "TUL" }
