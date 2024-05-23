@@ -11,12 +11,16 @@
 {% if firewall_docker_rules %}
 -F DOCKER-USER
 # docker rules
+{% if ansible_default_ipv4 %}
 {% for docker_rule in firewall_docker_rules %}
 {% for only in docker_rule.only %}
+{% if only.ipv4 is defined %}
 -A DOCKER-USER -i {{ ansible_default_ipv4.interface }} -s {{ only.ipv4 }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j ACCEPT -m comment --comment "{{ only.comment }}"
+{% endif %}
 {% endfor %}
 -A DOCKER-USER -i {{ ansible_default_ipv4.interface }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j REJECT
 {% endfor %}
+{% endif %}
 -A DOCKER-USER -j RETURN
 {% endif %}
 # basic rules

@@ -1,8 +1,29 @@
 # Created by Ansible
 *filter
 :INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
+:FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
+{% if firewall_docker_rules %}
+:DOCKER-USER - [0:0]
+{% endif %}
+# flush chains
+-F INPUT
+{% if firewall_docker_rules %}
+-F DOCKER-USER
+# docker rules
+{% if ansible_default_ipv6 %}
+{% for docker_rule in firewall_docker_rules %}
+{% for only in docker_rule.only %}
+{% if only.ipv6 is defined %}
+-A DOCKER-USER -i {{ ansible_default_ipv6.interface }} -s {{ only.ipv6 }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j ACCEPT -m comment --comment "{{ only.comment }}"
+{% endif %}
+{% endfor %}
+-A DOCKER-USER -i {{ ansible_default_ipv6.interface }} -p tcp -m conntrack --ctorigdstport {{ docker_rule.port }} --ctdir ORIGINAL -j REJECT
+{% endfor %}
+{% endif %}
+-A DOCKER-USER -j RETURN
+{% endif %}
+# basic rules
 -A INPUT -p icmpv6 -m comment --comment "accept all icmpv6" -j ACCEPT
 -A INPUT -i lo -j ACCEPT -m comment --comment "accept all on loopback"
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment "accept existing connections"

@@ -34,7 +34,7 @@
       [Service]
       Type=oneshot
       ExecStart=/sbin/iptables-restore --noflush /etc/iptables/rules.v4
-      ExecStart=/sbin/ip6tables-restore /etc/iptables/rules.v6
+      ExecStart=/sbin/ip6tables-restore --noflush /etc/iptables/rules.v6
 
       [Install]
       WantedBy=multi-user.target
