@@ -1,8 +1,7 @@
 ---
-- name: "ensure nftables,fail2ban and iptables-persistent are not installed"
+- name: "ensure fail2ban and iptables-persistent are not installed"
   package:
     name:
-      - nftables
       - fail2ban
       - iptables-persistent
     state: absent
