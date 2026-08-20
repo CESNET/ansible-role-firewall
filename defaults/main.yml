@@ -27,6 +27,11 @@ firewall_open_udp_ports: []
 #          - { ipv4: "147.251.0.0/16", comment: "https only from MUNI" }
 firewall_docker_rules: []
 
+# Lines added before final INPUT REJECT to /etc/iptables/rules.v4 and rules.v6
+# If chain != INPUT and != DOCKER-USER --- explicitly flush it by defining a rule -F CHAIN_NAME
+firewall_additional_iptables_rules: []
+firewall_additional_ip6tables_rules: []
+
 # CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
 # MUNI eduVPN ranges https://kb.net.muni.cz/s/segmentace-site/doc/segmentace-vpn-rozsahu-645WQT3oz7
 # use like this:

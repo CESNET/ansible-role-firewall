@@ -41,6 +41,9 @@
 {% if item.ipv6 is not defined %}-A INPUT {% if item.ipv4 is defined %}-s {{ item.ipv4 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
+{% for item in firewall_additional_iptables_rules %}
+{{ item }}
+{% endfor %}
 -A INPUT -p icmp -m comment --comment "accept all icmp" -j ACCEPT
 # final reject
 -A INPUT -j REJECT

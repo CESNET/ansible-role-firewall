@@ -18,6 +18,8 @@ Role Variables
 - firewall_open_tcp_ports - empty set, define as in the example below 
 - firewall_known_ranges - known ranges for the Czech academic network
 - firewall_docker_rules - empty set, one rule per port can be defined for restricting access to Docker containers
+- firewall_additional_iptables_rules - additional iptables rules in the iptables-save format. Add a flush rule if modifying chains other than INPUT and DOCKER-USER.
+- firewall_additional_ip6tables_rules - ip6tables version of firewall_additional_iptables_rules
 
 Example Playbook
 ----------------
@@ -51,6 +53,12 @@ Example Playbook
           - port: 443
             only:
               - { ipv4: "147.251.0.0/16", comment: "https only from MUNI" }
+        firewall_additional_iptables_rules:
+          - "-F OUTPUT"
+          - "-A OUTPUT -d example.com -m comment --comment example.com -j REJECT"
+        firewall_additional_ip6tables_rules:
+          - "-F OUTPUT"
+          - "-A OUTPUT -d example.com -m comment --comment example.com -j REJECT" 
 ```
 For more complex setups, you can use filters, e.g. to open ports 80 and 443 to known IP ranges only:
 ```yaml
