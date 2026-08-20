@@ -4,6 +4,7 @@
     backup: true
     src: rules.v4.j2
     dest: /etc/iptables/rules.v4
+    validate: /sbin/iptables-restore --test '%s'
   register: ipv4_rules
 
 - name: "set up IPv6 iptables rules"
@@ -11,6 +12,7 @@
     backup: true
     src: rules.v6.j2
     dest: /etc/iptables/rules.v6
+    validate: /sbin/ip6tables-restore --test '%s'
   register: ipv6_rules
 
 - name: "activate iptables rules"
