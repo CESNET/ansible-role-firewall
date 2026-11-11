@@ -32,6 +32,41 @@ firewall_docker_rules: []
 firewall_additional_iptables_rules: []
 firewall_additional_ip6tables_rules: []
 
+# OUTPUT chain
+# if true, the default policy for INPUT chain changes from ACCEPT to DROP
+firewall_output_restrict: false
+# if true, iptables rules for logging are added, so that whitelist for outgoing traffic can be created from the logs
+firewall_output_logging_enabled: "{{ not firewall_output_restrict }}"
+# limit rate of logging
+firewall_output_logging_hashlimit_upto: "1/day"
+firewall_output_logging_hashlimit_burst: "1"
+firewall_output_logging_hashlimit_htable_max: "100000"
+firewall_output_logging_hashlimit_htable_gcinterval: "43200000"
+firewall_output_logging_hashlimit_htable_expire: "86400000"
+firewall_output_logging_hashlimit_rate_interval: "86400"
+firewall_output_logging_hashlimit: >-
+  -m hashlimit
+  --hashlimit-upto {{ firewall_output_logging_hashlimit_upto }}
+  --hashlimit-burst {{ firewall_output_logging_hashlimit_burst }}
+  --hashlimit-mode dstip,dstport
+  --hashlimit-name unique-dstip-dstport
+  --hashlimit-htable-max {{ firewall_output_logging_hashlimit_htable_max }}
+  --hashlimit-htable-gcinterval {{ firewall_output_logging_hashlimit_htable_gcinterval }}
+  --hashlimit-htable-expire {{ firewall_output_logging_hashlimit_htable_expire }}
+  --hashlimit-rate-match
+  --hashlimit-rate-interval {{ firewall_output_logging_hashlimit_rate_interval }}
+
+firewall_output_open_ports:
+  - { port: "53", p: "udp", comment: "DNS" }
+  - { port: "53", p: "tcp", comment: "DNS over TCP" }
+  - { port: "67", p: "udp", comment: "DHCP" }
+  - { port: "80", p: "tcp", comment: "HTTP" }
+  - { port: "123", p: "udp", comment: "NTP" }
+  - { port: "443", p: "tcp", comment: "HTTPS" }
+  - { port: "443", p: "udp", comment: "HTTP/3" }
+
+firewall_output_open_additional_ports: []
+
 # CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
 # MUNI eduVPN ranges https://kb.net.muni.cz/s/segmentace-site/doc/segmentace-vpn-rozsahu-645WQT3oz7
 # use like this:
