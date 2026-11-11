@@ -12,14 +12,33 @@ systemctl restart iptables
 
 Role Variables
 --------------
-- firewall_do_install - installs iptables-legacy and selects them as the default iptables alternative
-- firewall_do_config - creates files with rules and applies them
-- firewall_open_ssh_ports - predefined rules for accepting ssh only from networks of MUNI,CESNET,ZCU 
-- firewall_open_tcp_ports - empty set, define as in the example below 
-- firewall_known_ranges - known ranges for the Czech academic network
-- firewall_docker_rules - empty set, one rule per port can be defined for restricting access to Docker containers
-- firewall_additional_iptables_rules - additional iptables rules in the iptables-save format. Add a flush rule if modifying chains other than INPUT and DOCKER-USER.
-- firewall_additional_ip6tables_rules - ip6tables version of firewall_additional_iptables_rules
+- `firewall_do_install` - installs iptables-legacy and selects them as the default iptables alternative
+- `firewall_do_config` - creates files with rules and applies them
+- `firewall_open_ssh_ports` - predefined rules for accepting ssh only from networks of MUNI,CESNET,ZCU 
+- `firewall_open_tcp_ports` - empty set, define as in the example below 
+- `firewall_known_ranges` - known ranges for the Czech academic network
+- `firewall_docker_rules` - empty set, one rule per port can be defined for restricting access to Docker containers
+- `firewall_additional_iptables_rules` - additional iptables rules in the iptables-save format. Add a flush rule if modifying chains other than INPUT and DOCKER-USER.
+- `firewall_additional_ip6tables_rules` - ip6tables version of firewall_additional_iptables_rules
+- `firewall_output_restrict` - if true, output chain is restricted (default is false)
+- `firewall_output_logging_enabled` - if true, outgoing connections are logged with OUT-NEW: and FWD-NEW: prefixes in OUTPUT and DOCKER-USER chains (default is negation of `firewall_output_restrict`) 
+- `firewall_output_open_ports` - essential list of ports to open for outgoing connections
+- `firewall_output_open_additional_ports` - additional list of ports to open for outgoing connections
+
+Restricting output
+------------------
+
+First let the `firewall_output_restrict` set to false, new outgoing connections will be logged. After several days,
+check the logs using the following command:
+```bash
+# new connections grouped by SRC, DST, PROTO and DPT
+journalctl -k --grep 'OUT-NEW:' --since today | sed -nE 's/.*SRC=([^ ]+) DST=([^ ]+) .*PROTO=([^ ]+) SPT=[0-9]+ DPT=([0-9]+).*/\1 \2 \3 \4/p' | sort | uniq -c | sort -r
+# new connections grouped by PROTO and DPT
+journalctl -k --grep 'OUT-NEW:' | grep -oE 'PROTO=[^ ]+ SPT=[0-9]+ DPT=[0-9]+' | sed -E 's/PROTO=([^ ]+) SPT=[0-9]+ DPT=([0-9]+)/\1 \2/' |sort | uniq -c | sort -rn
+```
+SRC, DST, PROTO and DPT are: source IP address, destination IP address, protocol (TCP/UDP), destination port.
+
+Create an allow list and set it to the `firewall_output_open_additional_ports` variable.
 
 Example Playbook
 ----------------
@@ -53,12 +72,12 @@ Example Playbook
           - port: 443
             only:
               - { ipv4: "147.251.0.0/16", comment: "https only from MUNI" }
-        firewall_additional_iptables_rules:
-          - "-F OUTPUT"
-          - "-A OUTPUT -d example.com -m comment --comment example.com -j REJECT"
-        firewall_additional_ip6tables_rules:
-          - "-F OUTPUT"
-          - "-A OUTPUT -d example.com -m comment --comment example.com -j REJECT" 
+        firewall_output_restrict: true
+        firewall_output_open_additional_ports:
+          - { port: "22", p: "tcp", comment: "SSH" }
+          - { port: "25", p: "tcp", ipv4: "rs.cesnet.cz", ipv6: "rs.cesnet.cz", comment: "SMTP rs.cesnet.cz" }
+          - { port: "514", p: "tcp", ipv4: "syslog.cesnet.cz", ipv6: "syslog.cesnet.cz", comment: "SYSLOG syslog.cesnet.cz" }
+          - { port: "1514", p: "tcp", ipv4: "gvm-wazuh1.cesnet.cz", ipv6: "gvm-wazuh1.cesnet.cz", comment: "Wazuh gvm-wazuh1.cesnet.cz" }
 ```
 For more complex setups, you can use filters, e.g. to open ports 80 and 443 to known IP ranges only:
 ```yaml

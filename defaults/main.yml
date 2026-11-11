@@ -32,6 +32,25 @@ firewall_docker_rules: []
 firewall_additional_iptables_rules: []
 firewall_additional_ip6tables_rules: []
 
+# OUTPUT chain
+# if true, the default policy for INPUT chain changes from ACCEPT to DROP
+firewall_output_restrict: false
+# if true, iptables rules for logging are added, so that whitelist for outgoing traffic can be created from the logs
+firewall_output_logging_enabled: "{{ not firewall_output_restrict }}"
+
+firewall_output_open_ports:
+  - { port: "53", p: "udp", comment: "DNS" }
+  - { port: "67", p: "udp", comment: "DHCP" }
+  - { port: "80", p: "tcp", comment: "HTTP" }
+  - { port: "123", p: "udp", comment: "NTP" }
+  - { port: "443", p: "tcp", comment: "HTTPS" }
+
+firewall_output_open_additional_ports: []
+#  - { port: "22", p: "tcp", comment: "SSH" }
+#  - { port: "25", p: "tcp", ipv4: "rs.cesnet.cz", ipv6: "rs.cesnet.cz", comment: "SMTP rs.cesnet.cz" }
+#  - { port: "514", p: "tcp", ipv4: "syslog.cesnet.cz", ipv6: "syslog.cesnet.cz", comment: "SYSLOG syslog.cesnet.cz" }
+#  - { port: "1514", p: "tcp", ipv4: "gvm-wazuh1.cesnet.cz", ipv6: "gvm-wazuh1.cesnet.cz", comment: "Wazuh gvm-wazuh1.cesnet.cz" }
+
 # CESNET IP ranges: https://apps.db.ripe.net/db-web-ui/query?searchtext=-r%20-i%20origin%20AS2852&source=RIPE&bflag=true#resultsSection
 # MUNI eduVPN ranges https://kb.net.muni.cz/s/segmentace-site/doc/segmentace-vpn-rozsahu-645WQT3oz7
 # use like this:
