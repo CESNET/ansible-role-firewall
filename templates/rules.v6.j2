@@ -1,16 +1,24 @@
 # Created by Ansible
 *filter
-:INPUT ACCEPT [0:0]
+:INPUT DROP [0:0]
 :FORWARD DROP [0:0]
+{% if firewall_output_restrict %}
+:OUTPUT DROP [0:0]
+{% else %}
 :OUTPUT ACCEPT [0:0]
+{% endif %}
 {% if firewall_docker_rules %}
 :DOCKER-USER - [0:0]
 {% endif %}
 # flush chains
 -F INPUT
+-F OUTPUT
 {% if firewall_docker_rules %}
 -F DOCKER-USER
 # docker rules
+{% if firewall_output_logging_enabled %}
+-A DOCKER-USER -s fc00::/7 -m conntrack --ctstate NEW -j LOG --log-prefix "FWD-NEW: " -m comment --comment "log new connections forwarded from Docker"
+{% endif %}
 {% if ansible_facts['default_ipv6'] %}
 {% for docker_rule in firewall_docker_rules %}
 {% for only in docker_rule.only %}
@@ -23,26 +31,43 @@
 {% endif %}
 -A DOCKER-USER -j RETURN
 {% endif %}
-# basic rules
+# basic input rules
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT -m comment --comment "accept existing connections"
 -A INPUT -i lo -j ACCEPT -m comment --comment "accept all on loopback"
 -A INPUT -m conntrack --ctstate INVALID -j DROP -m comment --comment "drop invalid packets"
--A INPUT -s ::1/128 ! -i lo -j DROP -m comment --comment "block remote packets claiming to be from a loopback address"
+-A INPUT -s ::1/128 -j DROP -m comment --comment "block remote packets claiming to be from a loopback address"
+-A INPUT -p ipv6-icmp -m comment --comment "accept all icmp" -j ACCEPT
+# main input rules
 {% for item in firewall_open_tcp_ports %}
-{% if item.ipv4 is not defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv4 is not defined or item.ipv6 is defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
 {% for item in firewall_open_udp_ports %}
-{% if item.ipv4 is not defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p udp -m udp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv4 is not defined or item.ipv6 is defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p udp -m udp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
 {% for item in firewall_open_ssh_ports %}
-{% if item.ipv4 is not defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% if item.ipv4 is not defined or item.ipv6 is defined %}-A INPUT {% if item.ipv6 is defined %}-s {{ item.ipv6 }} {% endif %}-p tcp -m tcp --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
 {% endif %}
 {% endfor %}
+-A INPUT -j REJECT
+# basic output rules
+{% if firewall_output_logging_enabled %}
+-A OUTPUT -m conntrack --ctstate NEW -j LOG --log-prefix "OUT-NEW: " --log-uid -m comment --comment "log new outgoing connections"
+{% endif %}
+{% if firewall_output_restrict %}
+-A OUTPUT -m conntrack --ctstate RELATED,ESTABLISHED  -j ACCEPT -m comment --comment "accept existing connections"
+-A OUTPUT -o lo -j ACCEPT -m comment --comment "accept all on loopback"
+-A OUTPUT -m conntrack --ctstate INVALID  -j DROP -m comment --comment "drop invalid packets"
+-A OUTPUT -p ipv6-icmp -j ACCEPT -m comment --comment "accept all icmp"
+# main output rules
+{% for item in ( firewall_output_open_ports + firewall_output_open_additional_ports ) %}
+{% if item.ipv4 is not defined or item.ipv6 is defined %}-A OUTPUT {% if item.ipv6 is defined %}-d {{ item.ipv6 }} {% endif %}-p {{ item.p }} --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+# additional rules
 {% for item in firewall_additional_ip6tables_rules %}
 {{ item }}
 {% endfor %}
--A INPUT -p icmpv6 -m comment --comment "accept all icmpv6" -j ACCEPT
--A INPUT -j REJECT
 COMMIT
