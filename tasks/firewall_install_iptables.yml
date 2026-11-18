@@ -28,10 +28,14 @@
     content: |
       [Unit]
       Description=Restore iptables firewall rules
+      DefaultDependencies=no
+      Wants=network-pre.target systemd-modules-load.service local-fs.target
       Before=network-pre.target
+      After=systemd-modules-load.service local-fs.target
 
       [Service]
       Type=oneshot
+      RemainAfterExit=yes
       ExecStart=/sbin/iptables-restore --noflush /etc/iptables/rules.v4
       ExecStart=/sbin/ip6tables-restore --noflush /etc/iptables/rules.v6
 
