@@ -75,9 +75,9 @@ Example Playbook
         firewall_output_restrict: true
         firewall_output_open_additional_ports:
           - { port: "22", p: "tcp", comment: "SSH" }
-          - { port: "25", p: "tcp", ipv4: "rs.cesnet.cz", ipv6: "rs.cesnet.cz", comment: "SMTP rs.cesnet.cz" }
-          - { port: "514", p: "tcp", ipv4: "syslog.cesnet.cz", ipv6: "syslog.cesnet.cz", comment: "SYSLOG syslog.cesnet.cz" }
-          - { port: "1514", p: "tcp", ipv4: "gvm-wazuh1.cesnet.cz", ipv6: "gvm-wazuh1.cesnet.cz", comment: "Wazuh gvm-wazuh1.cesnet.cz" }
+          - { port: "25", p: "tcp", ipv4: "relay.example.org", ipv6: "relay.example.org", comment: "SMTP relay.example.org" }
+          - { port: "514", p: "tcp", ipv4: "syslog.example.org", ipv6: "syslog.example.org", comment: "SYSLOG syslog.example.org" }
+          - { port: "1514", p: "tcp", ipv4: "wazuh.example.org", ipv6: "wazuh.example.org", comment: "Wazuh wazuh.example.org" }
 ```
 For more complex setups, you can use filters, e.g. to open ports 80 and 443 to known IP ranges only:
 ```yaml

@@ -58,7 +58,6 @@
 {% if firewall_output_restrict %}
 -A OUTPUT -m conntrack --ctstate RELATED,ESTABLISHED  -j ACCEPT -m comment --comment "accept existing connections"
 -A OUTPUT -o lo -j ACCEPT -m comment --comment "accept all on loopback"
--A OUTPUT -m conntrack --ctstate INVALID  -j DROP -m comment --comment "drop invalid packets"
 -A OUTPUT -p icmp -j ACCEPT -m comment --comment "accept all icmp"
 {% for item in ( firewall_output_open_ports + firewall_output_open_additional_ports ) %}
 {% if item.ipv6 is not defined or item.ipv4 is defined %}-A OUTPUT {% if item.ipv4 is defined %}-d {{ item.ipv4 }} {% endif %}-p {{ item.p }} --dport {{ item.port }} -j ACCEPT -m comment --comment "{{ item.comment }}"
@@ -69,4 +68,5 @@
 {% for item in firewall_additional_iptables_rules %}
 {{ item }}
 {% endfor %}
+-A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 COMMIT
